@@ -18,6 +18,9 @@ class ResourceAttributesMixin(object):
     results in returning a Resource Instance. This Instance can then be used
     to make calls to the a Resource.
 
+    The type of the resource returned can be overridden by adding a
+    resource_class attribute.
+
     It assumes that a Meta class exists at self._meta with all the required
     attributes.
     """
@@ -32,7 +35,9 @@ class ResourceAttributesMixin(object):
 
         kwargs.update({"base_url": url_join(self._store["base_url"], item)})
 
-        return Resource(**kwargs)
+        cls = type(self)
+        resource_class = getattr(cls, 'resource_class', cls)
+        return resource_class(**kwargs)
 
 
 class Resource(ResourceAttributesMixin, object):
@@ -178,6 +183,8 @@ class Resource(ResourceAttributesMixin, object):
 
 
 class API(ResourceAttributesMixin, object):
+
+    resource_class = Resource
 
     def __init__(self, base_url=None, auth=None, format=None, append_slash=True, session=None, serializer=None):
         if serializer is None:
