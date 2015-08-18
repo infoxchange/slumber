@@ -13,6 +13,8 @@ def url_join(base, *args):
     scheme, netloc, path, query, fragment = urlsplit(base)
     path = path if len(path) else "/"
     path = posixpath.join(path, *[('%s' % x) for x in args])
+    path = path.encode('utf8')
+    path = bytes(path)
     return urlunsplit([scheme, netloc, path, query, fragment])
 
 def copy_kwargs(dictionary):
